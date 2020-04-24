@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using ClasesGenericas.Interfaces;
 
 namespace ClasesGenericas.Estructuras
 {
-    public class ColaPrioridad<IComparable>
+    public class ColaPrioridad<IComparable> : IEnumerable<IComparable>
     {
         private Nodo<IComparable> Raiz { get; set; }
         public int Count { get; set; } = 0;
@@ -153,6 +154,35 @@ namespace ClasesGenericas.Estructuras
         {
             Raiz = null;
             Count = 0;
+        }
+
+        private void Inorden(Nodo<IComparable> position, List<IComparable> recorrido)
+        {
+            if (position.Izquierda != null)
+                Inorden(position.Izquierda, recorrido);
+            recorrido.Add(position.Valor);
+            if (position.Derecha != null)
+                Inorden(position.Derecha, recorrido);
+        }
+
+        public IEnumerator<IComparable> GetEnumerator()
+        {
+            List<IComparable> recorrido = new List<IComparable>();
+            if (Raiz != null)
+            {
+                Inorden(Raiz, recorrido);
+                recorrido.Sort();
+            }
+            while (recorrido.Count > 0)
+            {
+                yield return recorrido[0];
+                recorrido.Remove(recorrido[0]);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
