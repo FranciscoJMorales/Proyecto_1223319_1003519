@@ -125,6 +125,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\Storage.cs" />
+    <Compile Include="Models\Estadisticas.cs" />
+    <Compile Include="Models\Hospital.cs" />
+    <Compile Include="Models\LlavePaciente.cs" />
     <Compile Include="Models\Paciente.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -164,10 +168,13 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Paciente\Nuevo.cshtml" />
+    <Content Include="Views\Paciente\Estadisticas.cshtml" />
+    <Content Include="Views\Paciente\Paciente.cshtml" />
+    <Content Include="Views\Paciente\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Paciente\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -181,6 +188,12 @@
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClasesGenericas\ClasesGenericas.csproj">
+      <Project>{955c9708-7ffd-447e-ac68-b1c4b555fe1c}</Project>
+      <Name>ClasesGenericas</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

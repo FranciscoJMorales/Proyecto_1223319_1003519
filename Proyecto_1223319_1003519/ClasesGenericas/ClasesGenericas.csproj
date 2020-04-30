@@ -47,6 +47,7 @@
     <Compile Include="Estructuras\NodoLineal.cs" />
     <Compile Include="Estructuras\Pila.cs" />
     <Compile Include="Estructuras\TablaHash.cs" />
+    <Compile Include="Estructuras\TablaHashGeneral.cs" />
     <Compile Include="Interfaces\EstructuraLineal.cs" />
     <Compile Include="Interfaces\EstructuraNoLineal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

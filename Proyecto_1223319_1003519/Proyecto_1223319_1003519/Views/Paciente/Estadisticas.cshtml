@@ -1,0 +1,50 @@
+﻿@model Proyecto_1223319_1003519.Models.Estadisticas
+
+@{
+    ViewBag.Title = "Estadisticas";
+}
+
+<h2>Estadisticas</h2>
+
+<div>
+    <h4>Estadisticas</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Contagiados)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Contagiados)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Sospechosos)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Sospechosos)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Porcentaje)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Porcentaje)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Recuperados)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Recuperados)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ClasesGenericas.Estructuras
 {
+    //Tabla Hash utilizada para simular las camas de los hospitales
+    //Maneja colisiones colocando el elemento en el próximo espacio vacío.
+    //No permite más de 10 elementos.
     public class TablaHash<T>
     {
         private T[] Arreglo = new T[10];
@@ -149,11 +152,11 @@ namespace ClasesGenericas.Estructuras
         {
             try
             {
-                return (int.Parse(llave) * 7) % 10;
+                return (int.Parse(llave) * 7) % Arreglo.Length;
             }
             catch
             {
-                return (llave.Length * 7) % 10;
+                return (llave.Length * 7) % Arreglo.Length;
             }
         }
     }
