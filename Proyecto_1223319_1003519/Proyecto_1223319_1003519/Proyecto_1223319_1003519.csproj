@@ -172,6 +172,9 @@
     <Content Include="Views\Paciente\Estadisticas.cshtml" />
     <Content Include="Views\Paciente\Paciente.cshtml" />
     <Content Include="Views\Paciente\Index.cshtml" />
+    <Content Include="Views\Paciente\Resultados.cshtml" />
+    <Content Include="Views\Paciente\Hospital.cshtml" />
+    <Content Include="Views\Paciente\Cola.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

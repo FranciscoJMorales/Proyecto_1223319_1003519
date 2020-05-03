@@ -49,7 +49,7 @@ namespace ClasesGenericas.Estructuras
                 else
                     Insert(value, position.Derecha, comparer);
             }
-            else if (comparer.Invoke(value, position.Valor) < 0)
+            else
             {
                 if (position.Izquierda == null)
                 {
@@ -72,108 +72,97 @@ namespace ClasesGenericas.Estructuras
         {
             try
             {
-                Nodo<IComparable> aux = Search(value, Raiz, comparer);
-                if (aux.Derecha == null && aux.Izquierda == null)
+                List<Nodo<IComparable>> resultados = new List<Nodo<IComparable>>();
+                Search(value, Raiz, comparer, resultados);
+                if (resultados.Count > 0)
                 {
-                    if (aux.Padre != null)
+                    Nodo<IComparable> aux = resultados[0];
+                    if (aux.Derecha == null && aux.Izquierda == null)
                     {
-                        if (aux.Padre.Izquierda == aux)
-                            aux.Padre.Izquierda = null;
-                        else
-                            aux.Padre.Derecha = null;
-                    }
-                    if (aux == Raiz)
-                        Raiz = null;
-                    if (aux.Padre != null)
-                        Verificar(aux.Padre);
-                }
-                else if (aux.Derecha != null && aux.Izquierda != null)
-                {
-                    Nodo<IComparable> reemplazo = aux.Izquierda;
-                    while (reemplazo.Derecha != null)
-                    {
-                        reemplazo = reemplazo.Derecha;
-                    }
-                    Delete(reemplazo.Valor, comparer);
-                    aux.Valor = reemplazo.Valor;
-                    /*if (aux.Padre != null)
-                    {
-                        if (aux.Padre.Izquierda == aux)
+                        if (aux.Padre != null)
                         {
-                            aux.Padre.Izquierda = reemplazo;
-                        }
-                        else
-                        {
-                            aux.Padre.Derecha = reemplazo;
-                        }
-                    }
-                    reemplazo.Padre = aux.Padre;
-                    aux.Izquierda.Padre = reemplazo;
-                    aux.Derecha.Padre = reemplazo;
-                    reemplazo.Izquierda = aux.Izquierda;
-                    reemplazo.Derecha = reemplazo.Derecha;
-                    if (aux == Raiz)
-                        Raiz = reemplazo;*/
-                }
-                else
-                {
-                    if (aux.Padre != null)
-                    {
-                        if (aux.Padre.Izquierda == aux)
-                        {
-                            if (aux.Izquierda != null)
-                            {
-                                aux.Padre.Izquierda = aux.Izquierda;
-                                aux.Izquierda.Padre = aux.Padre;
-                            }
+                            if (aux.Padre.Izquierda == aux)
+                                aux.Padre.Izquierda = null;
                             else
-                            {
-                                aux.Padre.Izquierda = aux.Derecha;
-                                aux.Derecha.Padre = aux.Padre;
-                            }
+                                aux.Padre.Derecha = null;
                         }
-                        else
+                        if (aux == Raiz)
+                            Raiz = null;
+                        if (aux.Padre != null)
+                            Verificar(aux.Padre);
+                    }
+                    else if (aux.Derecha != null && aux.Izquierda != null)
+                    {
+                        Nodo<IComparable> reemplazo = aux.Izquierda;
+                        while (reemplazo.Derecha != null)
                         {
-                            if (aux.Izquierda != null)
-                            {
-                                aux.Padre.Derecha = aux.Izquierda;
-                                aux.Izquierda.Padre = aux.Padre;
-                            }
-                            else
-                            {
-                                aux.Padre.Derecha = aux.Derecha;
-                                aux.Derecha.Padre = aux.Padre;
-                            }
+                            reemplazo = reemplazo.Derecha;
                         }
-
+                        Delete(reemplazo.Valor, comparer);
+                        aux.Valor = reemplazo.Valor;
                     }
                     else
                     {
-                        if (aux.Izquierda != null)
+                        if (aux.Padre != null)
                         {
-                            aux.Izquierda.Padre = aux.Padre;
+                            if (aux.Padre.Izquierda == aux)
+                            {
+                                if (aux.Izquierda != null)
+                                {
+                                    aux.Padre.Izquierda = aux.Izquierda;
+                                    aux.Izquierda.Padre = aux.Padre;
+                                }
+                                else
+                                {
+                                    aux.Padre.Izquierda = aux.Derecha;
+                                    aux.Derecha.Padre = aux.Padre;
+                                }
+                            }
+                            else
+                            {
+                                if (aux.Izquierda != null)
+                                {
+                                    aux.Padre.Derecha = aux.Izquierda;
+                                    aux.Izquierda.Padre = aux.Padre;
+                                }
+                                else
+                                {
+                                    aux.Padre.Derecha = aux.Derecha;
+                                    aux.Derecha.Padre = aux.Padre;
+                                }
+                            }
+
                         }
                         else
                         {
-                            aux.Derecha.Padre = aux.Padre;
+                            if (aux.Izquierda != null)
+                            {
+                                aux.Izquierda.Padre = aux.Padre;
+                            }
+                            else
+                            {
+                                aux.Derecha.Padre = aux.Padre;
+                            }
                         }
-                    }
-                    if (aux == Raiz)
-                    {
-                        if (aux.Izquierda != null)
+                        if (aux == Raiz)
                         {
-                            Raiz = aux.Izquierda;
+                            if (aux.Izquierda != null)
+                            {
+                                Raiz = aux.Izquierda;
+                            }
+                            else
+                            {
+                                Raiz = aux.Derecha;
+                            }
                         }
-                        else
-                        {
-                            Raiz = aux.Derecha;
-                        }
+                        if (aux.Padre != null)
+                            Verificar(aux.Padre);
                     }
-                    if (aux.Padre != null)
-                        Verificar(aux.Padre);
+                    Count--;
+                    return aux.Valor;
                 }
-                Count--;
-                return aux.Valor;
+                else
+                    return default(IComparable);
             }
             catch
             {
@@ -186,31 +175,33 @@ namespace ClasesGenericas.Estructuras
             Remove(value, comparer);
         }
 
-        public IComparable Search(IComparable value, Comparison<IComparable> comparer)
+        public List<IComparable> Search(IComparable value, Comparison<IComparable> comparer)
         {
-            Nodo<IComparable> result = Search(value, Raiz, comparer);
-            if (result != null)
-                return result.Valor;
-            else
-                return default(IComparable);
+            List<Nodo<IComparable>> result = new List<Nodo<IComparable>>();
+            Search(value, Raiz, comparer, result);
+            List<IComparable> searchResults = new List<IComparable>();
+            foreach (Nodo<IComparable> item in result)
+                searchResults.Add(item.Valor);
+            return searchResults;
         }
 
-        private Nodo<IComparable> Search(IComparable value, Nodo<IComparable> position, Comparison<IComparable> comparer)
+        private void Search(IComparable value, Nodo<IComparable> position, Comparison<IComparable> comparer, List<Nodo<IComparable>> resultados)
         {
             if (position != null)
             {
                 if (comparer.Invoke(value, position.Valor) == 0)
-                    return position;
+                {
+                    resultados.Add(position);
+                    Search(value, position.Izquierda, comparer, resultados);
+                }
                 else
                 {
-                    if (comparer.Invoke(value, position.Valor) < 0)
-                        return Search(value, position.Izquierda, comparer);
+                    if (comparer.Invoke(value, position.Valor) > 0)
+                        Search(value, position.Derecha, comparer, resultados);
                     else
-                        return Search(value, position.Derecha, comparer);
+                        Search(value, position.Izquierda, comparer, resultados);
                 }
             }
-            else
-                return new Nodo<IComparable>();
         }
 
         public override void Clear()

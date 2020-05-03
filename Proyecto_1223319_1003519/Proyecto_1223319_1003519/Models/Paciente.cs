@@ -82,13 +82,23 @@ namespace Proyecto_1223319_1003519.Models
         public bool RealizarPrueba()
         {
             int probabilidad = 5;
+            //Agregar porcentajes
             Random rng = new Random();
             if (rng.Next(0, 100) < probabilidad)
             {
                 Estado = "Confirmado";
                 return true;
             }
-            return false;
+            else
+            {
+                Estado = "Sano";
+                return false;
+            }
+        }
+
+        public LlavePaciente ToLlavePaciente()
+        {
+            return new LlavePaciente { DPI = this.DPI, Nombre = this.Nombre, Apellido = this.Apellido, Edad = this.Edad, Estado = this.Estado };
         }
     }
 }

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Proyecto_1223319_1003519.Helpers;
+using Proyecto_1223319_1003519.Models;
+using ClasesGenericas.Estructuras;
 
 namespace Proyecto_1223319_1003519.Controllers
 {
@@ -11,7 +14,7 @@ namespace Proyecto_1223319_1003519.Controllers
         // GET: Paciente
         public ActionResult Index()
         {
-            return View();
+            return View(Storage.Instance.Hospitales);
         }
 
         // GET: Paciente/Details/5
