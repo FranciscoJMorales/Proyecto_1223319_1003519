@@ -19,6 +19,20 @@ namespace Proyecto_1223319_1003519.Models
         public string Estado { get; set; }
         public DateTime FechaEntrada { get; set; }
 
+        public static Comparison<Paciente> CompararNombre = delegate (Paciente p1, Paciente p2)
+        {
+            return p1.Nombre.ToLower().CompareTo(p2.Nombre.ToLower());
+        };
+        public static Comparison<Paciente> CompararApellido = delegate (Paciente p1, Paciente p2)
+        {
+            return p1.Nombre.ToLower().CompareTo(p2.Nombre.ToLower());
+        };
+        public static Comparison<Paciente> CompararDpi = delegate (Paciente p1, Paciente p2)
+        {
+            return p1.Nombre.ToLower().CompareTo(p2.Nombre.ToLower());
+        };
+
+     
         public Paciente(string nombre, string apellido, int dpi, int edad, string departamento, string municipio, string sintomas, string descripcion)
         {
             Nombre = nombre;
