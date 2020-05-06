@@ -49,16 +49,28 @@ namespace Proyecto_1223319_1003519.Controllers
                 Storage.Instance.AVLApellido.Add(paciente, Paciente.CompararApellido);
                 Storage.Instance.AVLDPI.Add(paciente, Paciente.CompararDpi);
                 Storage.Instance.Hospitales[paciente.HospitalMasCercano()].EstadoCola.Add(paciente, Paciente.CompararNombre);
-                if (paciente.RealizarPrueba())
+                if (/*paciente.RealizarPrueba()*/true)
                 {
-                    Storage.Instance.Hospitales[paciente.HospitalMasCercano()].EstadoCamas.Add(paciente, Paciente => Paciente.ToLlavePaciente().Nombre);
+                    if (Storage.Instance.Hospitales[1].EstadoCamas.isFull)
+                    {
+                        Storage.Instance.Hospitales[paciente.HospitalMasCercano()].Cola++;
+                        Storage.Instance.Hospitales[paciente.HospitalMasCercano()].EstadoCola.Add(paciente, Paciente.CompararDpi);                     
+                    }
+                    else
+                    {
+                       // Storage.Instance.Hospitales[paciente.HospitalMasCercano()].EstadoCamas.Add(paciente, p1 => Convert.ToString(p1.DPI));
+                        Storage.Instance.Hospitales[paciente.HospitalMasCercano()].Camas++;
+                    }
+                  
+
+
                 }
                 return RedirectToAction("Index");
             }
             catch
-            {
+           {
 
-                return View("Index");
+                return View("Nuevo");
             }
         }
 
@@ -105,31 +117,59 @@ namespace Proyecto_1223319_1003519.Controllers
                 return View();
             }
         }
-
-        public ActionResult BuscarNombre(string text)
+        int IDD = 0;
+        public ActionResult Hospital(int id)
         {
-            Paciente p1 = new Paciente( text.ToLower(), "", 0, 0, "", "", "", "") {
-                Nombre = text
-            };
-            return Buscar(Paciente.CompararNombre, 1,p1);
+            IDD = id;
+            return View(Storage.Instance.Hospitales[id]);
+        }
+        public ActionResult PacienteC()
+        {
+            return View(Storage.Instance.Hospitales[IDD].EstadoCola);
+        }
+        public ActionResult PacienteTH()
+        {
+            return View(Storage.Instance.Hospitales[IDD].EstadoCamas);
         }
 
-        public ActionResult BuscarApellido(string text)
+
+        [HttpPost]
+        public ActionResult BuscarNombre(FormCollection collection)
         {
-            Paciente p1 = new Paciente("", text.ToLower(), 0, 0, "", "", "", "") {
-                Apellido = text
+            Paciente p1 = new Paciente(collection["Nombre"].ToLower(), "", 0, 0, "", "", "", "") {
+            
             };
-            return Buscar(Paciente.CompararNombre, 2,p1);
+            return BuscarAVL(Paciente.CompararNombre, 1,p1);
         }
-        public ActionResult BuscarDPI(int text)
+        [HttpPost]
+        public ActionResult BuscarApellido(FormCollection collection)
         {
-            Paciente p1 = new Paciente("", "", text, 0, "", "", "", "")
+            Paciente p1 = new Paciente("", collection["Apellido"].ToLower(), 0, 0, "", "", "", "") {
+               
+            };
+            return BuscarAVL(Paciente.CompararNombre, 2,p1);
+        }
+        [HttpPost]
+        public ActionResult BuscarDPI(FormCollection collection)
+        {
+            Paciente p1 = new Paciente("", "", Int32.Parse(collection["dpi"]), 0, "", "", "", "")
             {
-                DPI = text
+               
             };
-            return Buscar(Paciente.CompararNombre, 3, p1);
+            return BuscarAVL(Paciente.CompararNombre, 3, p1);
         }
-        public ActionResult Buscar(Comparison<Paciente> parametro,int arbol, Paciente p1)
+        
+        //public ActionResult BuscarTH(Comparison<Paciente> parametro, int hospital, Paciente p1)
+        //{
+        //    if (Storage.Instance.Hospitales[hospital]. (p1, Paciente.CompararDpi).Equals(p1.DPI))
+        //    {
+
+        //        return RedirectToAction("Resultado");
+        //    }
+
+        //    return RedirectToAction("Listas");
+        //}
+        public ActionResult BuscarAVL(Comparison<Paciente> parametro,int arbol, Paciente p1)
         {
             switch (arbol)
             {
@@ -137,7 +177,7 @@ namespace Proyecto_1223319_1003519.Controllers
                     if(Storage.Instance.AVLNombre.Search(p1, Paciente.CompararNombre).Equals(p1.Nombre))
                     {
                        
-                        return RedirectToAction("Resultado");
+                        return RedirectToAction("Paciente");
                     }
                     break;
 
@@ -145,19 +185,25 @@ namespace Proyecto_1223319_1003519.Controllers
                     if (Storage.Instance.AVLApellido.Search(p1, Paciente.CompararApellido).Equals(p1.Apellido))
                     {
                         
-                        return RedirectToAction("Resultado");
+                        return RedirectToAction("Paciente");
                     }
                     break;
-
+                    
                 case 3:
                     if (Storage.Instance.AVLDPI.Search(p1, Paciente.CompararDpi).Equals(p1.DPI))
                     {
-                        return RedirectToAction("Resultado");
+                        return RedirectToAction("Paciente");
                     }
                     
                     break;
             }
-            return RedirectToAction("Listas");
-    }
+            return RedirectToAction("Index");
+        }
+      
+        public ActionResult Prueba(int id)
+        {
+            
+           return RedirectToAction("");
+        }
     }
 }
