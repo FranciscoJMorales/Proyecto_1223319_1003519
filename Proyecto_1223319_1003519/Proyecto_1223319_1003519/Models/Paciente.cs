@@ -93,10 +93,50 @@ namespace Proyecto_1223319_1003519.Models
             }
         }
 
+      
         public bool RealizarPrueba()
         {
             int probabilidad = 5;
-            //Agregar porcentajes
+            string[] ProbEuropa = new string[] {
+            "viaje", "europa", "españa", "italia", "francia", "alemania", "tour", "reino unido", "inglaterra", "belgica", "pais",
+            "europeos"
+            };
+            string[] ConocidoCont = new string[] {
+                "amigo", "novia", "amigos", "vecino", "vecinos"
+            };
+            string[] FamiliarCont = new string[] {
+                "mama", "papa", "hermanos", "hermana", "hermano", "prima", "tia", "tio", "abuela", "abuelo", "suegro", 
+                "suegra", "esposa", "hijos", "hija", "hijo"
+            };
+            string[] ReunionSocial = new string[] {
+                "fiesta", "reunion", "trabajo", "velada", "agrupación", "celebración", "asamblea", "grupo", "restaurante", "hotel",
+           "spa"
+            };
+
+            for (int i = 0; i < ProbEuropa.Length; i++)
+                {
+                if (Descripcion.Contains(ProbEuropa[i]))
+                {
+                    probabilidad += 30;
+                    i = ProbEuropa.Length;
+                }
+            }
+            for (int i = 0; i < ConocidoCont.Length; i++)
+            {
+                if (Descripcion.Contains(ConocidoCont[i]))
+                {
+                    probabilidad += 15;
+                    i = ConocidoCont.Length;
+                }
+            }
+            for (int i = 0; i < FamiliarCont.Length; i++)
+            {
+                if (Descripcion.Contains(FamiliarCont[i]))
+                {
+                    probabilidad += 30;
+                    i = FamiliarCont.Length;
+                }
+            }
             Random rng = new Random();
             if (rng.Next(0, 100) < probabilidad)
             {
@@ -110,6 +150,7 @@ namespace Proyecto_1223319_1003519.Models
             }
         }
 
+    
         public LlavePaciente ToLlavePaciente()
         {
             return new LlavePaciente { DPI = this.DPI, Nombre = this.Nombre, Apellido = this.Apellido, Edad = this.Edad, Estado = this.Estado };

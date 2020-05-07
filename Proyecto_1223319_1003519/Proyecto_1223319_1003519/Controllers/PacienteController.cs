@@ -28,10 +28,7 @@ namespace Proyecto_1223319_1003519.Controllers
         {
             return View("Nuevo");
         }
-        public ActionResult Cola()
-        {
-            return View("cola");
-        }
+       
         // POST: Paciente/Create
         [HttpPost]
         public ActionResult Create(FormCollection collection)
@@ -49,7 +46,7 @@ namespace Proyecto_1223319_1003519.Controllers
                 Storage.Instance.AVLApellido.Add(paciente, Paciente.CompararApellido);
                 Storage.Instance.AVLDPI.Add(paciente, Paciente.CompararDpi);
                 Storage.Instance.Hospitales[paciente.HospitalMasCercano()].EstadoCola.Add(paciente, Paciente.CompararNombre);
-                if (/*paciente.RealizarPrueba()*/true)
+                if (paciente.RealizarPrueba())
                 {
                     if (Storage.Instance.Hospitales[1].EstadoCamas.isFull)
                     {
@@ -117,42 +114,65 @@ namespace Proyecto_1223319_1003519.Controllers
                 return View();
             }
         }
-        int IDD = 0;
+        
         public ActionResult Hospital(int id)
         {
-            IDD = id;
+            Storage.Instance.HospitalActual = id;
             return View(Storage.Instance.Hospitales[id]);
         }
-        public ActionResult PacienteC()
+        public ActionResult Pacientee(int id)
         {
-            return View(Storage.Instance.Hospitales[IDD].EstadoCola);
+            Storage.Instance.HospitalActual = id;
+            return View(Storage.Instance.Hospitales[id]);
+        }
+        public ActionResult Cama()
+        {
+
+
+            return View(Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola.Get().ToLlavePaciente());
+        }
+        public ActionResult Cola()
+        {
+
+            //if (Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola.Get() != null)
+            //{
+            //    ColaPrioridad<LlavePaciente> info = new ColaPrioridad<LlavePaciente>();
+            //    ColaPrioridad<Paciente> cola = Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola;
+            //    foreach (Paciente infopaciente in cola)
+            //    {
+            //        info.Add(infopaciente.ToLlavePaciente(), Paciente.CompararNombre);
+            //    }
+            //    return View(cola);
+            //}
+
+            //else
+               return RedirectToAction("Index");   
         }
         public ActionResult PacienteTH()
         {
-            return View(Storage.Instance.Hospitales[IDD].EstadoCamas);
+            return View(Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCamas);
         }
 
 
-        [HttpPost]
-        public ActionResult BuscarNombre(FormCollection collection)
+        public ActionResult BuscarNombre(string text)
         {
-            Paciente p1 = new Paciente(collection["Nombre"].ToLower(), "", 0, 0, "", "", "", "") {
+            Paciente p1 = new Paciente(text.ToLower(), "", 0, 0, "", "", "", "") {
             
             };
             return BuscarAVL(Paciente.CompararNombre, 1,p1);
         }
-        [HttpPost]
-        public ActionResult BuscarApellido(FormCollection collection)
+       
+        public ActionResult BuscarApellido(string text)
         {
-            Paciente p1 = new Paciente("", collection["Apellido"].ToLower(), 0, 0, "", "", "", "") {
+            Paciente p1 = new Paciente("", text.ToLower(), 0, 0, "", "", "", "") {
                
             };
             return BuscarAVL(Paciente.CompararNombre, 2,p1);
         }
-        [HttpPost]
-        public ActionResult BuscarDPI(FormCollection collection)
+       
+        public ActionResult BuscarDPI(string text)
         {
-            Paciente p1 = new Paciente("", "", Int32.Parse(collection["dpi"]), 0, "", "", "", "")
+            Paciente p1 = new Paciente("", "", Int32.Parse(text), 0, "", "", "", "")
             {
                
             };
@@ -171,39 +191,45 @@ namespace Proyecto_1223319_1003519.Controllers
         //}
         public ActionResult BuscarAVL(Comparison<Paciente> parametro,int arbol, Paciente p1)
         {
+            List<LlavePaciente> info = new List<LlavePaciente>();
+            List<Paciente> pacientes = new List<Paciente>();
             switch (arbol)
             {
                 case 1:
-                    if(Storage.Instance.AVLNombre.Search(p1, Paciente.CompararNombre).Equals(p1.Nombre))
+                    
+                    pacientes = Storage.Instance.AVLNombre.Search(p1, Paciente.CompararNombre);
+                    
+                    foreach (Paciente infopaciente in pacientes)
                     {
-                       
-                        return RedirectToAction("Paciente");
+                        info.Add(infopaciente.ToLlavePaciente());
                     }
-                    break;
-
+                    return View("Resultados",info);
                 case 2:
-                    if (Storage.Instance.AVLApellido.Search(p1, Paciente.CompararApellido).Equals(p1.Apellido))
+                    pacientes = Storage.Instance.AVLApellido.Search(p1, Paciente.CompararApellido);
+                    foreach (Paciente infopaciente in pacientes)
                     {
-                        
-                        return RedirectToAction("Paciente");
+                        info.Add(infopaciente.ToLlavePaciente());
                     }
-                    break;
+
+                    return View("Resultados", info);
+                  
+                   
                     
                 case 3:
-                    if (Storage.Instance.AVLDPI.Search(p1, Paciente.CompararDpi).Equals(p1.DPI))
+                    pacientes = Storage.Instance.AVLDPI.Search(p1, Paciente.CompararDpi);
+                    foreach (Paciente infopaciente in pacientes)
                     {
-                        return RedirectToAction("Paciente");
+                        info.Add(infopaciente.ToLlavePaciente());
                     }
-                    
-                    break;
+
+                    return View("Resultados", info);
+
             }
             return RedirectToAction("Index");
         }
-      
-        public ActionResult Prueba(int id)
-        {
-            
-           return RedirectToAction("");
-        }
+
+        
+
+
     }
 }
