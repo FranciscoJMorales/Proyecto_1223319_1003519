@@ -80,7 +80,7 @@ namespace ClasesGenericas.Estructuras
                     if (aux.Derecha == null && aux.Izquierda == null)
                     {
                         if (aux.Padre != null)
-                        {
+                        {   
                             if (aux.Padre.Izquierda == aux)
                                 aux.Padre.Izquierda = null;
                             else
@@ -193,6 +193,7 @@ namespace ClasesGenericas.Estructuras
                 {
                     resultados.Add(position);
                     Search(value, position.Izquierda, comparer, resultados);
+                    Search(value, position.Derecha, comparer, resultados);
                 }
                 else
                 {

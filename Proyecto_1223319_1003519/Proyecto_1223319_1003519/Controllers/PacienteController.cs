@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Proyecto_1223319_1003519.Helpers;
 using Proyecto_1223319_1003519.Models;
 using ClasesGenericas.Estructuras;
+using System.Web.UI.WebControls;
 
 namespace Proyecto_1223319_1003519.Controllers
 {
@@ -14,59 +15,92 @@ namespace Proyecto_1223319_1003519.Controllers
         // GET: Paciente
         public ActionResult Index()
         {
-            return View(Storage.Instance.Hospitales);
+            if (Storage.Instance.showAlert)
+                Storage.Instance.showAlert = false;
+            else
+                ViewBag.Message = null;
+            return View("Index", Storage.Instance.Hospitales);
         }
 
         // GET: Paciente/Details/5
         public ActionResult Details(int id)
         {
             List<Paciente> resultados = Storage.Instance.AVLDPI.Search(new Paciente { DPI = id }, Paciente.CompararDpi);
+            ViewBag.Nombre = resultados[0].Nombre + " " + resultados[0].Apellido;
             return View("Paciente", resultados[0]);
         }
 
         // GET: Paciente/Create
         public ActionResult Create()
         {
+            if (Storage.Instance.showAlert)
+                Storage.Instance.showAlert = false;
+            else
+                ViewBag.Message = null;
             return View("Nuevo");
         }
-        
+
         // POST: Paciente/Create
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {
             try
             {
-
+                Storage.Instance.showAlert = true;
                 Paciente paciente = new Paciente(collection["Nombre"], collection["Apellido"], Int32.Parse(collection["DPI"]), Int32.Parse(collection["edad"]),
                     collection["Departamento"], collection["Municipio"], collection["Sintomas"], collection["Descripcion"]);
-                paciente.ToLlavePaciente();
-                Storage.Instance.AVLNombre.Add(paciente, Paciente.CompararNombre);
-                Storage.Instance.AVLApellido.Add(paciente, Paciente.CompararApellido);
-                Storage.Instance.AVLDPI.Add(paciente, Paciente.CompararDpi);
-                Storage.Instance.Hospitales[paciente.HospitalMasCercano()].Add(paciente);
-                Storage.Instance.Stats.NuevoSospechoso();
-                /*if (paciente.RealizarPrueba())
+                if (Valido(paciente))
                 {
-                    if (Storage.Instance.Hospitales[1].EstadoCamas.isFull)
-                    {
-                        Storage.Instance.Hospitales[paciente.HospitalMasCercano()].Cola++;
-                        Storage.Instance.Hospitales[paciente.HospitalMasCercano()].EstadoCola.Add(paciente, Paciente.CompararDpi);                     
-                    }
-                    else
-                    {
-                       // Storage.Instance.Hospitales[paciente.HospitalMasCercano()].EstadoCamas.Add(paciente, p1 => Convert.ToString(p1.DPI));
-                        Storage.Instance.Hospitales[paciente.HospitalMasCercano()].Camas++;
-                    }
-                  
-
-
-                }*/
-                return RedirectToAction("Index");
+                    Storage.Instance.AVLNombre.Add(paciente, Paciente.CompararNombre);
+                    Storage.Instance.AVLApellido.Add(paciente, Paciente.CompararApellido);
+                    Storage.Instance.AVLDPI.Add(paciente, Paciente.CompararDpi);
+                    Storage.Instance.Hospitales[paciente.HospitalMasCercano()].Add(paciente);
+                    Storage.Instance.Stats.NuevoSospechoso();
+                    ViewBag.Message = "El paciente se ha creado correctamente y fue asignado a la cola del Hospital " + Storage.Instance.Hospitales[paciente.HospitalMasCercano()].Nombre;
+                    return Index();
+                }
+                else
+                {
+                    Storage.Instance.showAlert = false;
+                    return View("Nuevo", paciente);
+                }
             }
             catch
             {
+                ViewBag.Message = "Hubo un error al crear al paciente. Datos no validos";
                 return RedirectToAction("Create");
             }
+        }
+
+        public bool Valido(Paciente paciente)
+        {
+            bool valido = true;
+            ViewBag.Message = "Hubo un error al crear al paciente";
+            if (paciente.DPI <= 0)
+            {
+                ViewBag.Message += ". DPI no valido";
+                valido = false;
+            }
+            else
+            {
+                List<Paciente> results = Storage.Instance.AVLDPI.Search(paciente, Paciente.CompararDpi);
+                if (results.Count > 0)
+                {
+                    ViewBag.Message += ". DPI ya existe";
+                    valido = false;
+                }
+            }
+            if (paciente.Edad < 0)
+            {
+                ViewBag.Message += ". Edad no valida";
+                valido = false;
+            }
+            if (paciente.HospitalMasCercano() == -1)
+            {
+                ViewBag.Message += ". Departamento no valido";
+                valido = false;
+            }
+            return valido;
         }
 
         // GET: Paciente/Edit/5
@@ -113,6 +147,11 @@ namespace Proyecto_1223319_1003519.Controllers
             }
         }
 
+        public ActionResult VolverHospital()
+        {
+            return Hospital(Storage.Instance.HospitalActual);
+        }
+
         public ActionResult Hospital(int id)
         {
             Storage.Instance.HospitalActual = id;
@@ -134,20 +173,31 @@ namespace Proyecto_1223319_1003519.Controllers
                     ViewBag.Hospital = "Oriente";
                     break;
             }
-            return View(Storage.Instance.Hospitales[Storage.Instance.HospitalActual]);
+            return View("Hospital", Storage.Instance.Hospitales[Storage.Instance.HospitalActual]);
         }
 
         public ActionResult ProximoPaciente()
         {
             Paciente valor = Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola.Get();
             if (valor != null)
+            {
+                if (Storage.Instance.showAlert)
+                    Storage.Instance.showAlert = false;
+                else
+                    ViewBag.Message = null;
+                ViewBag.Nombre = valor.Nombre + " " + valor.Apellido;
                 return View("ProximoPaciente", valor);
+            }
             else
-                return RedirectToAction("Cola");
+                return Cola();
         }
 
         public ActionResult Cola()
         {
+            if (Storage.Instance.showAlert)
+                Storage.Instance.showAlert = false;
+            else
+                ViewBag.Message = null;
             List<LlavePaciente> cola = new List<LlavePaciente>();
             foreach (Paciente item in Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola)
                 cola.Add(item.ToLlavePaciente());
@@ -156,15 +206,19 @@ namespace Proyecto_1223319_1003519.Controllers
 
         public ActionResult Cama()
         {
+            if (Storage.Instance.showAlert)
+                Storage.Instance.showAlert = false;
+            else
+                ViewBag.Message = null;
             Cama[] camas = new Cama[10];
             for (int i =0; i < Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCamas.Arreglo.Length; i++)
             {
                 if (Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCamas.Arreglo[i] != null)
-                    camas[i] = new Cama(i, Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCamas.Arreglo[i].ToLlavePaciente());
+                    camas[i] = new Cama(i + 1, Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCamas.Arreglo[i].ToLlavePaciente());
                 else
-                    camas[i] = new Cama(i);
+                    camas[i] = new Cama(i + 1);
             }
-            return View(camas);
+            return View("Cama", camas);
         }
 
         public ActionResult Recuperado(int id)
@@ -174,8 +228,10 @@ namespace Proyecto_1223319_1003519.Controllers
             {
                 nuevo.Estado = "Recuperado";
                 Storage.Instance.Stats.NuevoRecuperado();
+                ViewBag.Message = "El paciente se ha dado de alta y ha salido del hospital";
+                Storage.Instance.showAlert = true;
             }
-            return RedirectToAction("Cama");
+            return Cama();
         }
 
         [HttpPost]
@@ -235,32 +291,32 @@ namespace Proyecto_1223319_1003519.Controllers
             return View("Resultados", result);
         }
 
-        //public ActionResult BuscarTH(Comparison<Paciente> parametro, int hospital, Paciente p1)
-        //{
-        //    if (Storage.Instance.Hospitales[hospital]. (p1, Paciente.CompararDpi).Equals(p1.DPI))
-        //    {
-
-        //        return RedirectToAction("Resultado");
-        //    }
-
-        //    return RedirectToAction("Listas");
-        //}
-
         public ActionResult Prueba()
         {
             Paciente nuevo = Storage.Instance.Hospitales[Storage.Instance.HospitalActual].RemoveFromCola();
-            if (nuevo.RealizarPrueba())
+            Storage.Instance.showAlert = true;
+            if (nuevo.Estado == "Sospechoso")
             {
-                nuevo.Estado = "Contagiado";
-                Storage.Instance.Stats.NuevoContagiado();
-                Storage.Instance.Hospitales[Storage.Instance.HospitalActual].Add(nuevo);
-                return RedirectToAction("");
+                if (nuevo.RealizarPrueba())
+                {
+                    nuevo.Estado = "Contagiado";
+                    Storage.Instance.Stats.NuevoContagiado();
+                    Storage.Instance.Hospitales[Storage.Instance.HospitalActual].Add(nuevo);
+                    ViewBag.Message = "El resultado de la prueba fue: POSITIVO";
+                    return Cama();
+                }
+                else
+                {
+                    nuevo.Estado = "Sano";
+                    Storage.Instance.Stats.NuevoSano();
+                    ViewBag.Message = "El resultado de la prueba fue: NEGATIVO";
+                    return ProximoPaciente();
+                }
             }
             else
             {
-                nuevo.Estado = "Sano";
-                Storage.Instance.Stats.NuevoSano();
-                return RedirectToAction("ProximoPaciente");
+                ViewBag.Message = "La prueba ya fue realizada en este paciente. Liberar camas para asignar al paciente a una.";
+                return Cama();
             }
         }
 

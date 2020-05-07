@@ -104,25 +104,93 @@ namespace Proyecto_1223319_1003519.Models
                 case "solola":
                 case "sololá":
                     return 3;
-                default:
+                case "izabal":
+                case "zacapa":
+                case "jalapa":
+                case "chiquimula":
+                case "jutiapa":
                     return 4;
+                default:
+                    return -1;
             }
         }
 
         public bool RealizarPrueba()
         {
             //int probabilidad = 5;
-            int probabilidad = 50;
-            //Agregar porcentajes
+            int probabilidad = 5;
+            string[] ProbEuropa = new string[] {
+                "viaje", "europa", "españa", "italia", "francia", "alemania", "tour", "reino unido", "inglaterra", "belgica",
+                "bélgica", "pais", "país", "europeo"
+            };
+            string[] ConocidoCont = new string[] {
+                "amig", "novi", "vecin", "conocid"
+            };
+            string[] FamiliarCont = new string[] {
+                "mama", "mamá", "madre", "papa", "papá", "padre", "herman", "prim", "tio", "tío", "tia", "tía", "abuel", "suegr",
+                "espos", "hij", "familia"
+            };
+            string[] ReunionSocial = new string[] {
+                "fiesta", "reunion", "reunión", "trabajo", "velada", "agrupación", "agrupacion", "celebración", "celebracion", "asamblea",
+                "grupo", "restaurante", "hotel", "spa", "social"
+            };
+            for (int i = 0; i < ProbEuropa.Length; i++)
+            {
+                if (Descripcion.ToLower().Contains(ProbEuropa[i]))
+                {
+                    probabilidad += 10;
+                    i = ProbEuropa.Length;
+                }
+            }
+            for (int i = 0; i < ConocidoCont.Length; i++)
+            {
+                if (Descripcion.ToLower().Contains(ConocidoCont[i]))
+                {
+                    probabilidad += 15;
+                    i = ConocidoCont.Length;
+                }
+            }
+            for (int i = 0; i < FamiliarCont.Length; i++)
+            {
+                if (Descripcion.ToLower().Contains(FamiliarCont[i]))
+                {
+                    probabilidad += 30;
+                    i = FamiliarCont.Length;
+                }
+            }
+            for (int i = 0; i < ReunionSocial.Length; i++)
+            {
+                if (Descripcion.ToLower().Contains(ReunionSocial[i]))
+                {
+                    probabilidad += 5;
+                    i = ReunionSocial.Length;
+                }
+            }
             Random rng = new Random();
             if (rng.Next(0, 100) < probabilidad)
             {
                 Estado = "Confirmado";
+                switch (Prioridad)
+                {
+                    case 4:
+                        Prioridad = 1;
+                        break;
+                    case 6:
+                        Prioridad = 2;
+                        break;
+                    case 7:
+                        Prioridad = 3;
+                        break;
+                    case 8:
+                        Prioridad = 5;
+                        break;
+                }
                 return true;
             }
             else
             {
                 Estado = "Sano";
+                Prioridad = 100;
                 return false;
             }
         }

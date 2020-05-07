@@ -22,19 +22,25 @@ namespace Proyecto_1223319_1003519.Models
         {
             Contagiados++;
             Sospechosos--;
-            Porcentaje = 100 * ((Contagiados + Recuperados) / (Contagiados + Recuperados + Sanos));
+            CambiarPorcentaje();
         }
 
         public void NuevoSano()
         {
             Sospechosos--;
             Sanos++;
+            CambiarPorcentaje();
         }
 
         public void NuevoRecuperado()
         {
             Recuperados++;
             Contagiados--;
+        }
+
+        private void CambiarPorcentaje()
+        {
+            Porcentaje = Math.Round(100.00 * ((Convert.ToDouble(Contagiados) + Convert.ToDouble(Recuperados)) / (Convert.ToDouble(Contagiados) + Convert.ToDouble(Recuperados) + Convert.ToDouble(Sanos))), 2);
         }
     }
 }

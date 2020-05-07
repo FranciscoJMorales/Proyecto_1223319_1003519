@@ -62,9 +62,9 @@ namespace ClasesGenericas.Estructuras
         public T Remove(T value, Func<T, string> llave)
         {
             T resultado = default(T);
-            try
+            if (Arreglo[FuncionHash(llave(value))] != null)
             {
-                if (llave(Arreglo[FuncionHash(llave(value))]) == null)
+                if (llave(Arreglo[FuncionHash(llave(value))]) == llave(value))
                 {
                     resultado = Arreglo[FuncionHash(llave(value))];
                     Arreglo[FuncionHash(llave(value))] = default(T);
@@ -87,19 +87,17 @@ namespace ClasesGenericas.Estructuras
                                 isFull = false;
                                 continuar = false;
                             }
+                            else
+                            {
+                                pos++;
+                                if (pos == 10)
+                                    pos = 0;
+                            }
                         }
                         else
-                        {
-                            pos++;
-                            if (pos == 10)
-                                pos = 0;
-                        }
+                            continuar = false;
                     }
                 }
-
-            }
-            catch
-            {
             }
             return resultado;
         }
@@ -112,30 +110,33 @@ namespace ClasesGenericas.Estructuras
         public T Search(T value, Func<T, string> llave)
         {
             T resultado = default(T);
-            if (llave(Arreglo[FuncionHash(llave(value))]).Equals(llave(value)))
-                resultado = Arreglo[FuncionHash(llave(value))];
-            else
+            if (Arreglo[FuncionHash(llave(value))] != null)
             {
-                int posicionInicial = FuncionHash(llave(value));
-                int pos = posicionInicial + 1;
-                bool continuar = true;
-                if (pos == 10)
-                    pos = 0;
-                while (pos != posicionInicial && continuar)
+                if (llave(Arreglo[FuncionHash(llave(value))]).Equals(llave(value)))
+                    resultado = Arreglo[FuncionHash(llave(value))];
+                else
                 {
-                    if (Arreglo[pos] != null)
+                    int posicionInicial = FuncionHash(llave(value));
+                    int pos = posicionInicial + 1;
+                    bool continuar = true;
+                    if (pos == 10)
+                        pos = 0;
+                    while (pos != posicionInicial && continuar)
                     {
-                        if (llave(Arreglo[pos]).Equals(llave(value)))
+                        if (Arreglo[pos] != null)
                         {
-                            resultado = Arreglo[pos];
-                            continuar = false;
+                            if (llave(Arreglo[pos]).Equals(llave(value)))
+                            {
+                                resultado = Arreglo[pos];
+                                continuar = false;
+                            }
                         }
-                    }
-                    else
-                    {
-                        pos++;
-                        if (pos == 10)
-                            pos = 0;
+                        else
+                        {
+                            pos++;
+                            if (pos == 10)
+                                pos = 0;
+                        }
                     }
                 }
             }

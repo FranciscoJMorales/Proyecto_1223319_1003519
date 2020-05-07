@@ -6,6 +6,15 @@
 
 <h2>COVID-19</h2>
 
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
+
 <p>
     @Html.ActionLink("Nuevo Paciente", "Create")
 </p>

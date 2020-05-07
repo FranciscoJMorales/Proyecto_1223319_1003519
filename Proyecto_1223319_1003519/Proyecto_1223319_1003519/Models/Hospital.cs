@@ -51,7 +51,18 @@ namespace Proyecto_1223319_1003519.Models
             {
                 Paciente valor = EstadoCamas.Remove(value, llave);
                 if (valor != null)
+                {
                     Camas--;
+                    if (EstadoCola.Get() != null)
+                    {
+                        if (EstadoCola.Get().Estado == "Contagiado")
+                        {
+                            EstadoCamas.Add(EstadoCola.Remove(Paciente.CompararPrioridad), llave);
+                            Camas++;
+                            Cola--;
+                        }
+                    }
+                }
                 return valor;
             }
             else

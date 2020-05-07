@@ -5,9 +5,18 @@
 }
 
 <h2>Proximo Paciente</h2>
+<h3>@ViewBag.Nombre</h3>
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+    </script>
+}
 
 <div>
-    <h4>Paciente</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -104,5 +113,11 @@
 <input type="button" value="Realizar prueba" onclick="location.href='@Url.Action("Prueba", "Paciente")'" />
 
 <p>
-    @Html.ActionLink("Ver cola completa", "Cola")
+    @Html.ActionLink("Ver cola completa", "Cola", "Paciente")
+</p>
+<p>
+    @Html.ActionLink("Volver al hospital", "VolverHospital", "Paciente")
+</p>
+<p>
+    @Html.ActionLink("Volver al inicio", "Index", "Paciente")
 </p>
