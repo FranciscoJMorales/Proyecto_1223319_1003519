@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -7,13 +8,21 @@ namespace Proyecto_1223319_1003519.Models
 {
     public class Paciente : IComparable
     {
+        [Required]
         public string Nombre { get; set; }
+        [Required]
         public string Apellido { get; set; }
+        [Required]
         public int DPI { get; set; }
+        [Required]
         public int Edad { get; set; }
+        [Required]
         public string Departamento { get; set; }
+        [Required]
         public string Municipio { get; set; }
+        [Required]
         public string Sintomas { get; set; }
+        [Required]
         public string Descripcion { get; set; }
         public int Prioridad { get; set; }
         public string Estado { get; set; }
