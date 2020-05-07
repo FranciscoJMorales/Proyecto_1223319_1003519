@@ -139,7 +139,11 @@ namespace Proyecto_1223319_1003519.Controllers
 
         public ActionResult ProximoPaciente()
         {
-            return View(Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola.Get());
+            Paciente valor = Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola.Get();
+            if (valor != null)
+                return View("ProximoPaciente", valor);
+            else
+                return RedirectToAction("Cola");
         }
 
         public ActionResult Cola()
@@ -147,7 +151,7 @@ namespace Proyecto_1223319_1003519.Controllers
             List<LlavePaciente> cola = new List<LlavePaciente>();
             foreach (Paciente item in Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola)
                 cola.Add(item.ToLlavePaciente());
-            return View(Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola);
+            return View("Cola", cola);
         }
 
         public ActionResult Cama()
@@ -161,6 +165,17 @@ namespace Proyecto_1223319_1003519.Controllers
                     camas[i] = new Cama(i);
             }
             return View(camas);
+        }
+
+        public ActionResult Recuperado(int id)
+        {
+            Paciente nuevo = Storage.Instance.Hospitales[Storage.Instance.HospitalActual].RemoveFromCamas(new Paciente { DPI = id }, paciente => paciente.DPI.ToString());
+            if (nuevo != null)
+            {
+                nuevo.Estado = "Recuperado";
+                Storage.Instance.Stats.NuevoRecuperado();
+            }
+            return RedirectToAction("Cama");
         }
 
         [HttpPost]
@@ -231,10 +246,22 @@ namespace Proyecto_1223319_1003519.Controllers
         //    return RedirectToAction("Listas");
         //}
 
-        public ActionResult Prueba(int id)
+        public ActionResult Prueba()
         {
-            
-           return RedirectToAction("");
+            Paciente nuevo = Storage.Instance.Hospitales[Storage.Instance.HospitalActual].RemoveFromCola();
+            if (nuevo.RealizarPrueba())
+            {
+                nuevo.Estado = "Contagiado";
+                Storage.Instance.Stats.NuevoContagiado();
+                Storage.Instance.Hospitales[Storage.Instance.HospitalActual].Add(nuevo);
+                return RedirectToAction("");
+            }
+            else
+            {
+                nuevo.Estado = "Sano";
+                Storage.Instance.Stats.NuevoSano();
+                return RedirectToAction("ProximoPaciente");
+            }
         }
 
         public ActionResult Estadisticas()

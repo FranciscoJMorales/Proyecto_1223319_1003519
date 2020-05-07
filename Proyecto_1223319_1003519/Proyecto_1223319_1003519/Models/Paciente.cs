@@ -111,7 +111,8 @@ namespace Proyecto_1223319_1003519.Models
 
         public bool RealizarPrueba()
         {
-            int probabilidad = 5;
+            //int probabilidad = 5;
+            int probabilidad = 50;
             //Agregar porcentajes
             Random rng = new Random();
             if (rng.Next(0, 100) < probabilidad)

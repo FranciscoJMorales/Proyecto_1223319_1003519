@@ -35,5 +35,6 @@ namespace Proyecto_1223319_1003519.Helpers
         public Hospital[] Hospitales = new Hospital[5];
         public Estadisticas Stats = new Estadisticas();
         public int HospitalActual = 0;
+        public bool showAlert = false;
     }
 }

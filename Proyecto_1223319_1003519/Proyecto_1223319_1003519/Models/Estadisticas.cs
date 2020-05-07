@@ -22,7 +22,7 @@ namespace Proyecto_1223319_1003519.Models
         {
             Contagiados++;
             Sospechosos--;
-            Porcentaje = 100 * ((Contagiados + Recuperados) / (Contagiados + Sanos));
+            Porcentaje = 100 * ((Contagiados + Recuperados) / (Contagiados + Recuperados + Sanos));
         }
 
         public void NuevoSano()

@@ -18,7 +18,7 @@ namespace ClasesGenericas.Estructuras
         {
             if (!isFull)
             {
-                if (Arreglo[FuncionHash(llave(value))].Equals(default(T)))
+                if (Arreglo[FuncionHash(llave(value))] == null)
                 {
                     Arreglo[FuncionHash(llave(value))] = value;
                     CheckIfFull();
@@ -32,7 +32,7 @@ namespace ClasesGenericas.Estructuras
                         pos = 0;
                     while (pos != posicionInicial && continuar)
                     {
-                        if (Arreglo[pos].Equals(default(T)))
+                        if (Arreglo[pos] == null)
                         {
                             Arreglo[pos] = value;
                             CheckIfFull();
@@ -54,7 +54,7 @@ namespace ClasesGenericas.Estructuras
             isFull = true;
             for (int i = 0; i < Arreglo.Length; i++)
             {
-                if (Arreglo[i].Equals(default(T)))
+                if (Arreglo[i] == null)
                     isFull = false;
             }
         }
@@ -62,37 +62,44 @@ namespace ClasesGenericas.Estructuras
         public T Remove(T value, Func<T, string> llave)
         {
             T resultado = default(T);
-            if (llave(Arreglo[FuncionHash(llave(value))]).Equals(llave(value)))
+            try
             {
-                resultado = Arreglo[FuncionHash(llave(value))];
-                Arreglo[FuncionHash(llave(value))] = default(T);
-            }
-            else
-            {
-                int posicionInicial = FuncionHash(llave(value));
-                int pos = posicionInicial + 1;
-                bool continuar = true;
-                if (pos == 10)
-                    pos = 0;
-                while (pos != posicionInicial && continuar)
+                if (llave(Arreglo[FuncionHash(llave(value))]) == null)
                 {
-                    if (!Arreglo[pos].Equals(default(T)))
+                    resultado = Arreglo[FuncionHash(llave(value))];
+                    Arreglo[FuncionHash(llave(value))] = default(T);
+                }
+                else
+                {
+                    int posicionInicial = FuncionHash(llave(value));
+                    int pos = posicionInicial + 1;
+                    bool continuar = true;
+                    if (pos == 10)
+                        pos = 0;
+                    while (pos != posicionInicial && continuar)
                     {
-                        if (llave(Arreglo[pos]).Equals(llave(value)))
+                        if (Arreglo[pos] != null)
                         {
-                            resultado = Arreglo[pos];
-                            Arreglo[pos] = default(T);
-                            isFull = false;
-                            continuar = false;
+                            if (llave(Arreglo[pos]).Equals(llave(value)))
+                            {
+                                resultado = Arreglo[pos];
+                                Arreglo[pos] = default(T);
+                                isFull = false;
+                                continuar = false;
+                            }
+                        }
+                        else
+                        {
+                            pos++;
+                            if (pos == 10)
+                                pos = 0;
                         }
                     }
-                    else
-                    {
-                        pos++;
-                        if (pos == 10)
-                            pos = 0;
-                    }
                 }
+
+            }
+            catch
+            {
             }
             return resultado;
         }
@@ -116,7 +123,7 @@ namespace ClasesGenericas.Estructuras
                     pos = 0;
                 while (pos != posicionInicial && continuar)
                 {
-                    if (!Arreglo[pos].Equals(default(T)))
+                    if (Arreglo[pos] != null)
                     {
                         if (llave(Arreglo[pos]).Equals(llave(value)))
                         {
