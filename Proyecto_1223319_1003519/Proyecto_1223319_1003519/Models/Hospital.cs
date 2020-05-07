@@ -14,5 +14,11 @@ namespace Proyecto_1223319_1003519.Models
         public int Cola { get; set; } = 0;
         public TablaHash<Paciente> EstadoCamas = new TablaHash<Paciente>();
         public ColaPrioridad<Paciente> EstadoCola = new ColaPrioridad<Paciente>();
+
+        public void Add(Paciente nuevo)
+        {
+            EstadoCola.Add(nuevo, Paciente.CompararPrioridad);
+            Cola++;
+        }
     }
 }

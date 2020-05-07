@@ -20,7 +20,8 @@ namespace Proyecto_1223319_1003519.Controllers
         // GET: Paciente/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            List<Paciente> resultados = Storage.Instance.AVLDPI.Search(new Paciente { DPI = id }, Paciente.CompararDpi);
+            return View("Paciente", resultados[0]);
         }
 
         // GET: Paciente/Create
@@ -28,10 +29,7 @@ namespace Proyecto_1223319_1003519.Controllers
         {
             return View("Nuevo");
         }
-        public ActionResult Cola()
-        {
-            return View("cola");
-        }
+        
         // POST: Paciente/Create
         [HttpPost]
         public ActionResult Create(FormCollection collection)
@@ -40,16 +38,14 @@ namespace Proyecto_1223319_1003519.Controllers
             {
 
                 Paciente paciente = new Paciente(collection["Nombre"], collection["Apellido"], Int32.Parse(collection["DPI"]), Int32.Parse(collection["edad"]),
-                    collection["Departamento"], collection["Municipio"], collection["Sintomas"], collection["Descripcion"])
-                {
-                
-                };
+                    collection["Departamento"], collection["Municipio"], collection["Sintomas"], collection["Descripcion"]);
                 paciente.ToLlavePaciente();
                 Storage.Instance.AVLNombre.Add(paciente, Paciente.CompararNombre);
                 Storage.Instance.AVLApellido.Add(paciente, Paciente.CompararApellido);
                 Storage.Instance.AVLDPI.Add(paciente, Paciente.CompararDpi);
-                Storage.Instance.Hospitales[paciente.HospitalMasCercano()].EstadoCola.Add(paciente, Paciente.CompararNombre);
-                if (/*paciente.RealizarPrueba()*/true)
+                Storage.Instance.Hospitales[paciente.HospitalMasCercano()].Add(paciente);
+                Storage.Instance.Stats.NuevoSospechoso();
+                /*if (paciente.RealizarPrueba())
                 {
                     if (Storage.Instance.Hospitales[1].EstadoCamas.isFull)
                     {
@@ -64,13 +60,12 @@ namespace Proyecto_1223319_1003519.Controllers
                   
 
 
-                }
+                }*/
                 return RedirectToAction("Index");
             }
             catch
-           {
-
-                return View("Nuevo");
+            {
+                return RedirectToAction("Create");
             }
         }
 
@@ -117,48 +112,114 @@ namespace Proyecto_1223319_1003519.Controllers
                 return View();
             }
         }
-        int IDD = 0;
+
         public ActionResult Hospital(int id)
         {
-            IDD = id;
-            return View(Storage.Instance.Hospitales[id]);
-        }
-        public ActionResult PacienteC()
-        {
-            return View(Storage.Instance.Hospitales[IDD].EstadoCola);
-        }
-        public ActionResult PacienteTH()
-        {
-            return View(Storage.Instance.Hospitales[IDD].EstadoCamas);
+            Storage.Instance.HospitalActual = id;
+            switch (id)
+            {
+                case 0:
+                    ViewBag.Hospital = "Capital";
+                    break;
+                case 1:
+                    ViewBag.Hospital = "Quetzaltenango";
+                    break;
+                case 2:
+                    ViewBag.Hospital = "Peten";
+                    break;
+                case 3:
+                    ViewBag.Hospital = "Escuintla";
+                    break;
+                default:
+                    ViewBag.Hospital = "Oriente";
+                    break;
+            }
+            return View(Storage.Instance.Hospitales[Storage.Instance.HospitalActual]);
         }
 
+        public ActionResult ProximoPaciente()
+        {
+            return View(Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola.Get());
+        }
+
+        public ActionResult Cola()
+        {
+            List<LlavePaciente> cola = new List<LlavePaciente>();
+            foreach (Paciente item in Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola)
+                cola.Add(item.ToLlavePaciente());
+            return View(Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola);
+        }
+
+        public ActionResult Cama()
+        {
+            Cama[] camas = new Cama[10];
+            for (int i =0; i < Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCamas.Arreglo.Length; i++)
+            {
+                if (Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCamas.Arreglo[i] != null)
+                    camas[i] = new Cama(i, Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCamas.Arreglo[i].ToLlavePaciente());
+                else
+                    camas[i] = new Cama(i);
+            }
+            return View(camas);
+        }
 
         [HttpPost]
         public ActionResult BuscarNombre(FormCollection collection)
         {
-            Paciente p1 = new Paciente(collection["Nombre"].ToLower(), "", 0, 0, "", "", "", "") {
-            
-            };
-            return BuscarAVL(Paciente.CompararNombre, 1,p1);
+            try
+            {
+                List<Paciente> resultados = Storage.Instance.AVLNombre.Search(new Paciente { Nombre = collection["text"] }, Paciente.CompararNombre);
+                List<LlavePaciente> result = new List<LlavePaciente>();
+                foreach (Paciente item in resultados)
+                    result.Add(item.ToLlavePaciente());
+                return Resultados(result);
+            }
+            catch
+            {
+                return RedirectToAction("Index");
+            }
         }
+
         [HttpPost]
         public ActionResult BuscarApellido(FormCollection collection)
         {
-            Paciente p1 = new Paciente("", collection["Apellido"].ToLower(), 0, 0, "", "", "", "") {
-               
-            };
-            return BuscarAVL(Paciente.CompararNombre, 2,p1);
+            try
+            {
+                List<Paciente> resultados = Storage.Instance.AVLApellido.Search(new Paciente { Apellido = collection["text"] }, Paciente.CompararApellido);
+                List<LlavePaciente> result = new List<LlavePaciente>();
+                foreach (Paciente item in resultados)
+                    result.Add(item.ToLlavePaciente());
+                return Resultados(result);
+            }
+            catch
+            {
+                return RedirectToAction("Index");
+            }
         }
+
         [HttpPost]
         public ActionResult BuscarDPI(FormCollection collection)
         {
-            Paciente p1 = new Paciente("", "", Int32.Parse(collection["dpi"]), 0, "", "", "", "")
+            try
             {
-               
-            };
-            return BuscarAVL(Paciente.CompararNombre, 3, p1);
+                List<Paciente> resultados = Storage.Instance.AVLDPI.Search(new Paciente { DPI = int.Parse(collection["text"]) }, Paciente.CompararDpi);
+                List<LlavePaciente> result = new List<LlavePaciente>();
+                foreach (Paciente item in resultados)
+                    result.Add(item.ToLlavePaciente());
+                return Resultados(result);
+            }
+            catch
+            {
+                return RedirectToAction("Index");
+            }
         }
-        
+
+        public ActionResult Resultados(List<LlavePaciente> result)
+        {
+            ViewBag.Resultados = result.Count;
+            return View("Resultados", result);
+        }
+
         //public ActionResult BuscarTH(Comparison<Paciente> parametro, int hospital, Paciente p1)
         //{
         //    if (Storage.Instance.Hospitales[hospital]. (p1, Paciente.CompararDpi).Equals(p1.DPI))
@@ -169,41 +230,16 @@ namespace Proyecto_1223319_1003519.Controllers
 
         //    return RedirectToAction("Listas");
         //}
-        public ActionResult BuscarAVL(Comparison<Paciente> parametro,int arbol, Paciente p1)
-        {
-            switch (arbol)
-            {
-                case 1:
-                    if(Storage.Instance.AVLNombre.Search(p1, Paciente.CompararNombre).Equals(p1.Nombre))
-                    {
-                       
-                        return RedirectToAction("Paciente");
-                    }
-                    break;
 
-                case 2:
-                    if (Storage.Instance.AVLApellido.Search(p1, Paciente.CompararApellido).Equals(p1.Apellido))
-                    {
-                        
-                        return RedirectToAction("Paciente");
-                    }
-                    break;
-                    
-                case 3:
-                    if (Storage.Instance.AVLDPI.Search(p1, Paciente.CompararDpi).Equals(p1.DPI))
-                    {
-                        return RedirectToAction("Paciente");
-                    }
-                    
-                    break;
-            }
-            return RedirectToAction("Index");
-        }
-      
         public ActionResult Prueba(int id)
         {
             
            return RedirectToAction("");
+        }
+
+        public ActionResult Estadisticas()
+        {
+            return View(Storage.Instance.Stats);
         }
     }
 }

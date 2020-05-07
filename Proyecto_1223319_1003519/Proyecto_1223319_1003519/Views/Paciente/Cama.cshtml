@@ -1,13 +1,16 @@
-﻿@model IEnumerable<Proyecto_1223319_1003519.Models.LlavePaciente>
+﻿@model IEnumerable<Proyecto_1223319_1003519.Models.Cama>
 
 @{
-    ViewBag.Title = "Cola";
+    ViewBag.Title = "Cama";
 }
 
-<h2>Estado de la Cola</h2>
+<h2>Estado de las Camas</h2>
 
 <table class="table">
     <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.No)
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.DPI)
         </th>
@@ -29,6 +32,9 @@
 @foreach (var item in Model) {
     <tr>
         <td>
+            @Html.DisplayFor(modelItem => item.No)
+        </td>
+        <td>
             @Html.DisplayFor(modelItem => item.DPI)
         </td>
         <td>
@@ -44,13 +50,9 @@
             @Html.DisplayFor(modelItem => item.Estado)
         </td>
         <td>
-            @Html.ActionLink("Detalles", "Details", new { id = item.DPI })
+            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
         </td>
     </tr>
 }
 
 </table>
-
-<p>
-    @Html.ActionLink("Volver al inicio", "Index", "Paciente")
-</p>

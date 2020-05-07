@@ -23,16 +23,26 @@ namespace Proyecto_1223319_1003519.Models
         {
             return p1.Nombre.ToLower().CompareTo(p2.Nombre.ToLower());
         };
+
         public static Comparison<Paciente> CompararApellido = delegate (Paciente p1, Paciente p2)
         {
-            return p1.Nombre.ToLower().CompareTo(p2.Nombre.ToLower());
-        };
-        public static Comparison<Paciente> CompararDpi = delegate (Paciente p1, Paciente p2)
-        {
-            return p1.Nombre.ToLower().CompareTo(p2.Nombre.ToLower());
+            return p1.Apellido.ToLower().CompareTo(p2.Apellido.ToLower());
         };
 
-     
+        public static Comparison<Paciente> CompararDpi = delegate (Paciente p1, Paciente p2)
+        {
+            return p1.DPI.CompareTo(p2.DPI);
+        };
+
+        public static Comparison<Paciente> CompararPrioridad = delegate (Paciente p1, Paciente p2)
+        {
+            return p1.CompareTo(p2);
+        };
+
+        public Paciente()
+        {
+        }
+
         public Paciente(string nombre, string apellido, int dpi, int edad, string departamento, string municipio, string sintomas, string descripcion)
         {
             Nombre = nombre;
@@ -69,6 +79,7 @@ namespace Proyecto_1223319_1003519.Models
             {
                 case "guatemala":
                 case "sacatepequez":
+                case "sacatepéquez":
                 case "chimaltenango":
                 case "el progreso":
                     return 0;
@@ -76,17 +87,22 @@ namespace Proyecto_1223319_1003519.Models
                 case "san marcos":
                 case "huehuetenango":
                 case "totonicapan":
+                case "totonicapán":
                 case "retalhuleu":
                     return 1;
                 case "peten":
+                case "petén":
                 case "alta verapaz":
                 case "baja verapaz":
                 case "quiche":
+                case "quiché":
                     return 2;
                 case "escuintla":
                 case "suchitepequez":
+                case "suchitepéquez":
                 case "santa rosa":
                 case "solola":
+                case "sololá":
                     return 3;
                 default:
                     return 4;

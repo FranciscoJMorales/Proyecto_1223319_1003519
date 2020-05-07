@@ -11,7 +11,7 @@ namespace ClasesGenericas.Estructuras
     //No permite más de 10 elementos.
     public class TablaHash<T>
     {
-        private T[] Arreglo = new T[10];
+        public T[] Arreglo = new T[10];
         public bool isFull = false;
 
         public void Add(T value, Func<T, string> llave)
@@ -133,19 +133,6 @@ namespace ClasesGenericas.Estructuras
                 }
             }
             return resultado;
-        }
-
-        public List<T> Items()
-        {
-            List<T> valores = new List<T>();
-            foreach (T item in Arreglo)
-            {
-                if (!item.Equals(default(T)))
-                {
-                    valores.Add(item);
-                }
-            }
-            return valores;
         }
 
         private int FuncionHash(string llave)

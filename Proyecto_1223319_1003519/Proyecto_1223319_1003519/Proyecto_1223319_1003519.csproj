@@ -126,6 +126,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Storage.cs" />
+    <Compile Include="Models\Cama.cs" />
     <Compile Include="Models\Estadisticas.cs" />
     <Compile Include="Models\Hospital.cs" />
     <Compile Include="Models\LlavePaciente.cs" />
@@ -175,6 +176,8 @@
     <Content Include="Views\Paciente\Resultados.cshtml" />
     <Content Include="Views\Paciente\Hospital.cshtml" />
     <Content Include="Views\Paciente\Cola.cshtml" />
+    <Content Include="Views\Paciente\Cama.cshtml" />
+    <Content Include="Views\Paciente\ProximoPaciente.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

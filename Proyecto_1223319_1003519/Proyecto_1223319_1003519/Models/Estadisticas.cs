@@ -11,6 +11,7 @@ namespace Proyecto_1223319_1003519.Models
         public int Sospechosos { get; set; } = 0;
         public double Porcentaje { get; set; } = 0;
         public int Recuperados { get; set; } = 0;
+        public int Sanos { get; set; } = 0;
 
         public void NuevoSospechoso()
         {
@@ -21,7 +22,13 @@ namespace Proyecto_1223319_1003519.Models
         {
             Contagiados++;
             Sospechosos--;
-            Porcentaje = 100 * (Contagiados + Recuperados) / (Contagiados + Sospechosos + Recuperados);
+            Porcentaje = 100 * ((Contagiados + Recuperados) / (Contagiados + Sanos));
+        }
+
+        public void NuevoSano()
+        {
+            Sospechosos--;
+            Sanos++;
         }
 
         public void NuevoRecuperado()

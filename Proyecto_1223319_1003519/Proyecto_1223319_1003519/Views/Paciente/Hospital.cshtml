@@ -5,18 +5,10 @@
 }
 
 <h2>Estado del Hospital</h2>
-
+<h3>@ViewBag.Hospital</h3>
 <div>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-
         <dt>
             @Html.DisplayNameFor(model => model.Camas)
         </dt>
@@ -37,7 +29,8 @@
 </div>
 
 <input type="button" value="Ver camas" onclick="location.href='@Url.Action("Cama", "Paciente")'" />
-<input type="button" value="Ver cola" onclick="location.href='@Url.Action("Cola", "Paciente")'" />
+<br />
+<input type="button" value="Ver cola" onclick="location.href='@Url.Action("ProximoPaciente", "Paciente")'" />
 
 <p>
     @Html.ActionLink("Volver al inicio", "Index", "Paciente")

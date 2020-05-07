@@ -1,0 +1,108 @@
+﻿@model Proyecto_1223319_1003519.Models.Paciente
+
+@{
+    ViewBag.Title = "ProximoPaciente";
+}
+
+<h2>Proximo Paciente</h2>
+
+<div>
+    <h4>Paciente</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Apellido)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Apellido)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DPI)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DPI)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Edad)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Edad)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Departamento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Departamento)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Municipio)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Municipio)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Sintomas)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Sintomas)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Descripcion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Descripcion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Prioridad)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Prioridad)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Estado)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Estado)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaEntrada)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FechaEntrada)
+        </dd>
+
+    </dl>
+</div>
+
+<input type="button" value="Realizar prueba" onclick="location.href='@Url.Action("Prueba", "Paciente")'" />
+
+<p>
+    @Html.ActionLink("Ver cola completa", "Cola")
+</p>
