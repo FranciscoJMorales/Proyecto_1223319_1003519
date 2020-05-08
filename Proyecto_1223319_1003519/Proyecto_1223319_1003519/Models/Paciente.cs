@@ -6,6 +6,7 @@ using System.Web;
 
 namespace Proyecto_1223319_1003519.Models
 {
+    //Clase donde se almacenan todos los datos de un paciente
     public class Paciente : IComparable
     {
         [Required]
@@ -13,7 +14,7 @@ namespace Proyecto_1223319_1003519.Models
         [Required]
         public string Apellido { get; set; }
         [Required]
-        public int DPI { get; set; }
+        public string DPI { get; set; }
         [Required]
         public int Edad { get; set; }
         [Required]
@@ -28,6 +29,7 @@ namespace Proyecto_1223319_1003519.Models
         public string Estado { get; set; }
         public DateTime FechaEntrada { get; set; }
 
+        //Delegados de comparaciones usados en los AVL
         public static Comparison<Paciente> CompararNombre = delegate (Paciente p1, Paciente p2)
         {
             return p1.Nombre.ToLower().CompareTo(p2.Nombre.ToLower());
@@ -48,11 +50,13 @@ namespace Proyecto_1223319_1003519.Models
             return p1.CompareTo(p2);
         };
 
+        //Constructor por defecto
         public Paciente()
         {
         }
 
-        public Paciente(string nombre, string apellido, int dpi, int edad, string departamento, string municipio, string sintomas, string descripcion)
+        //Constructor que asigna automáticamente la prioridad, el estado y la fecha de entrada
+        public Paciente(string nombre, string apellido, string dpi, int edad, string departamento, string municipio, string sintomas, string descripcion)
         {
             Nombre = nombre;
             Apellido = apellido;
@@ -74,6 +78,7 @@ namespace Proyecto_1223319_1003519.Models
             FechaEntrada = DateTime.Now;
         }
 
+        //Método heredado de IComparable
         public int CompareTo(object obj)
         {
             if (this.Prioridad.CompareTo(((Paciente)obj).Prioridad) == 0)
@@ -82,6 +87,7 @@ namespace Proyecto_1223319_1003519.Models
                 return this.Prioridad.CompareTo(((Paciente)obj).Prioridad);
         }
 
+        //Método que devuelve a qué hospital se debe de asignar al paciente
         public int HospitalMasCercano()
         {
             switch (Departamento.ToLower())
@@ -124,10 +130,11 @@ namespace Proyecto_1223319_1003519.Models
             }
         }
 
+        //Método que realiza la prueba del covid-19 en base a la descripción del paciente. Devuelve si el resultado fue positivo o negativo
         public bool RealizarPrueba()
         {
-            //int probabilidad = 5;
             int probabilidad = 5;
+            //Palabras clave
             string[] ProbEuropa = new string[] {
                 "viaje", "europa", "españa", "italia", "francia", "alemania", "tour", "reino unido", "inglaterra", "belgica",
                 "bélgica", "pais", "país", "europeo"
@@ -143,6 +150,7 @@ namespace Proyecto_1223319_1003519.Models
                 "fiesta", "reunion", "reunión", "trabajo", "velada", "agrupación", "agrupacion", "celebración", "celebracion", "asamblea",
                 "grupo", "restaurante", "hotel", "spa", "social"
             };
+            //Se revisa si contiene alguna de las palabras clave para aumentar el porcentaje
             for (int i = 0; i < ProbEuropa.Length; i++)
             {
                 if (Descripcion.ToLower().Contains(ProbEuropa[i]))
@@ -176,9 +184,10 @@ namespace Proyecto_1223319_1003519.Models
                 }
             }
             Random rng = new Random();
+            //Se cambia el estado y la prioridad dependiendo del resultado de la prueba
             if (rng.Next(0, 100) < probabilidad)
             {
-                Estado = "Confirmado";
+                Estado = "Contagiado";
                 switch (Prioridad)
                 {
                     case 4:
@@ -204,6 +213,7 @@ namespace Proyecto_1223319_1003519.Models
             }
         }
 
+        //Convierte un paciente a la clase más sencilla LlavePaciente
         public LlavePaciente ToLlavePaciente()
         {
             return new LlavePaciente { DPI = this.DPI, Nombre = this.Nombre, Apellido = this.Apellido, Edad = this.Edad, Estado = this.Estado };

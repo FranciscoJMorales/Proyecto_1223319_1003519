@@ -5,6 +5,7 @@ using System.Web;
 
 namespace Proyecto_1223319_1003519.Models
 {
+    //Clase donde se almacenan todas las estadísticas de los pacientes
     public class Estadisticas
     {
         public int Contagiados { get; set; } = 0;
@@ -13,6 +14,7 @@ namespace Proyecto_1223319_1003519.Models
         public int Recuperados { get; set; } = 0;
         public int Sanos { get; set; } = 0;
 
+        //Métodos utilizados cada vez que se ingresa un paciente o cambia su estado
         public void NuevoSospechoso()
         {
             Sospechosos++;

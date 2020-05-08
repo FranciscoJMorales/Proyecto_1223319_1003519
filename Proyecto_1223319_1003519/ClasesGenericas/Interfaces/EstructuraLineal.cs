@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClasesGenericas.Interfaces
 {
+    //Interfaz para las estructuras de datos lineales
     public abstract class EstructuraLineal<T>
     {
         protected abstract void Add(T value);

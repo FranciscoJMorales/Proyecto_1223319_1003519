@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClasesGenericas.Estructuras
 {
+    //Nodo con un valor y dos hijos
     public class Nodo<T>
     {
         public Nodo<T> Padre { get; set; }

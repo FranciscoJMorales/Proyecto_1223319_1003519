@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClasesGenericas.Estructuras
 {
+    //Nodo para estructuras lineales
     public class NodoLineal<T>
     {
         public NodoLineal<T> Siguiente { get; set; }

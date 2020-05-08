@@ -13,6 +13,7 @@ namespace Proyecto_1223319_1003519.Controllers
     public class PacienteController : Controller
     {
         // GET: Paciente
+        //Devuelve la pantalla principal y muestra la alerta si existe
         public ActionResult Index()
         {
             if (Storage.Instance.showAlert)
@@ -23,7 +24,8 @@ namespace Proyecto_1223319_1003519.Controllers
         }
 
         // GET: Paciente/Details/5
-        public ActionResult Details(int id)
+        //Devuelve la vista con los detalles del paciente recibido
+        public ActionResult Details(string id)
         {
             List<Paciente> resultados = Storage.Instance.AVLDPI.Search(new Paciente { DPI = id }, Paciente.CompararDpi);
             ViewBag.Nombre = resultados[0].Nombre + " " + resultados[0].Apellido;
@@ -31,6 +33,7 @@ namespace Proyecto_1223319_1003519.Controllers
         }
 
         // GET: Paciente/Create
+        //Devuelve la vista para ingresar a un nuevo paciente y muestra la alerta si existe
         public ActionResult Create()
         {
             if (Storage.Instance.showAlert)
@@ -41,14 +44,16 @@ namespace Proyecto_1223319_1003519.Controllers
         }
 
         // POST: Paciente/Create
+        //Crea al paciente con los datos recibidos y lo almacena en las estructuras correspondientes
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {
             try
             {
                 Storage.Instance.showAlert = true;
-                Paciente paciente = new Paciente(collection["Nombre"], collection["Apellido"], Int32.Parse(collection["DPI"]), Int32.Parse(collection["edad"]),
+                Paciente paciente = new Paciente(collection["Nombre"], collection["Apellido"], collection["DPI"], Int32.Parse(collection["edad"]),
                     collection["Departamento"], collection["Municipio"], collection["Sintomas"], collection["Descripcion"]);
+                //Si los datos son válidos, almacena al paciente en las estructuras correspondientes
                 if (Valido(paciente))
                 {
                     Storage.Instance.AVLNombre.Add(paciente, Paciente.CompararNombre);
@@ -61,40 +66,57 @@ namespace Proyecto_1223319_1003519.Controllers
                 }
                 else
                 {
+                    //Si no son válidos, vuelve a la vista de crear nuevo paciente
                     Storage.Instance.showAlert = false;
                     return View("Nuevo", paciente);
                 }
             }
             catch
             {
+                //Si no son válidos, vuelve a la vista de crear nuevo paciente
                 ViewBag.Message = "Hubo un error al crear al paciente. Datos no validos";
                 return RedirectToAction("Create");
             }
         }
 
+        //Método que devuelve si los datos para el paciente ingresado son válidos
         public bool Valido(Paciente paciente)
         {
+            //El método revisa si:
             bool valido = true;
             ViewBag.Message = "Hubo un error al crear al paciente";
-            if (paciente.DPI <= 0)
+            //No hay letras en el dpi
+            if (long.TryParse(paciente.DPI, out long dpi))
+            {
+                //El dpi es un número válido
+                if (dpi <= 0)
+                {
+                    ViewBag.Message += ". DPI no valido";
+                    valido = false;
+                }
+                else
+                {
+                    List<Paciente> results = Storage.Instance.AVLDPI.Search(paciente, Paciente.CompararDpi);
+                    //El dpi no ha sido ingresado anteriormente
+                    if (results.Count > 0)
+                    {
+                        ViewBag.Message += ". DPI ya existe";
+                        valido = false;
+                    }
+                }
+            }
+            else
             {
                 ViewBag.Message += ". DPI no valido";
                 valido = false;
             }
-            else
-            {
-                List<Paciente> results = Storage.Instance.AVLDPI.Search(paciente, Paciente.CompararDpi);
-                if (results.Count > 0)
-                {
-                    ViewBag.Message += ". DPI ya existe";
-                    valido = false;
-                }
-            }
+            //La edad del paciente no es negativa
             if (paciente.Edad < 0)
             {
                 ViewBag.Message += ". Edad no valida";
                 valido = false;
             }
+            //El departamento ingresado existe
             if (paciente.HospitalMasCercano() == -1)
             {
                 ViewBag.Message += ". Departamento no valido";
@@ -147,11 +169,13 @@ namespace Proyecto_1223319_1003519.Controllers
             }
         }
 
+        //Muestra al último hospital visitado
         public ActionResult VolverHospital()
         {
             return Hospital(Storage.Instance.HospitalActual);
         }
 
+        //Muestra la vista del hospital indicado
         public ActionResult Hospital(int id)
         {
             Storage.Instance.HospitalActual = id;
@@ -176,6 +200,7 @@ namespace Proyecto_1223319_1003519.Controllers
             return View("Hospital", Storage.Instance.Hospitales[Storage.Instance.HospitalActual]);
         }
 
+        //Muestra los datos del paciente con mayor prioridad en la cola
         public ActionResult ProximoPaciente()
         {
             Paciente valor = Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCola.Get();
@@ -188,10 +213,12 @@ namespace Proyecto_1223319_1003519.Controllers
                 ViewBag.Nombre = valor.Nombre + " " + valor.Apellido;
                 return View("ProximoPaciente", valor);
             }
+            //Si la cola está vacía, muestra la vista de la cola vacía
             else
                 return Cola();
         }
 
+        //Muestra el estado de todos los pacientes en la cola
         public ActionResult Cola()
         {
             if (Storage.Instance.showAlert)
@@ -204,6 +231,7 @@ namespace Proyecto_1223319_1003519.Controllers
             return View("Cola", cola);
         }
 
+        //Muestra el estado de todas las camas en el hospital
         public ActionResult Cama()
         {
             if (Storage.Instance.showAlert)
@@ -211,6 +239,7 @@ namespace Proyecto_1223319_1003519.Controllers
             else
                 ViewBag.Message = null;
             Cama[] camas = new Cama[10];
+            //Convierte los elementos de la tabla hash de Paciente a Cama
             for (int i =0; i < Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCamas.Arreglo.Length; i++)
             {
                 if (Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCamas.Arreglo[i] != null)
@@ -221,7 +250,8 @@ namespace Proyecto_1223319_1003519.Controllers
             return View("Cama", camas);
         }
 
-        public ActionResult Recuperado(int id)
+        //Método que cambia el estado de un paciente contagiado a recuperado y lo elimina de su cama
+        public ActionResult Recuperado(string id)
         {
             Paciente nuevo = Storage.Instance.Hospitales[Storage.Instance.HospitalActual].RemoveFromCamas(new Paciente { DPI = id }, paciente => paciente.DPI.ToString());
             if (nuevo != null)
@@ -234,6 +264,7 @@ namespace Proyecto_1223319_1003519.Controllers
             return Cama();
         }
 
+        //Búsqueda por nombre
         [HttpPost]
         public ActionResult BuscarNombre(FormCollection collection)
         {
@@ -251,6 +282,7 @@ namespace Proyecto_1223319_1003519.Controllers
             }
         }
 
+        //Búsqueda por apellido
         [HttpPost]
         public ActionResult BuscarApellido(FormCollection collection)
         {
@@ -268,12 +300,13 @@ namespace Proyecto_1223319_1003519.Controllers
             }
         }
 
+        //Búsqueda por DPI
         [HttpPost]
         public ActionResult BuscarDPI(FormCollection collection)
         {
             try
             {
-                List<Paciente> resultados = Storage.Instance.AVLDPI.Search(new Paciente { DPI = int.Parse(collection["text"]) }, Paciente.CompararDpi);
+                List<Paciente> resultados = Storage.Instance.AVLDPI.Search(new Paciente { DPI = collection["text"] }, Paciente.CompararDpi);
                 List<LlavePaciente> result = new List<LlavePaciente>();
                 foreach (Paciente item in resultados)
                     result.Add(item.ToLlavePaciente());
@@ -285,12 +318,14 @@ namespace Proyecto_1223319_1003519.Controllers
             }
         }
 
+        //Muestra la vista con los resultados de una búsqueda
         public ActionResult Resultados(List<LlavePaciente> result)
         {
             ViewBag.Resultados = result.Count;
             return View("Resultados", result);
         }
 
+        //Método que realiza la prueba del covid-19 en un paciente, y lo mueve a la estructura correspondiente dependiendo del resultado
         public ActionResult Prueba()
         {
             Paciente nuevo = Storage.Instance.Hospitales[Storage.Instance.HospitalActual].RemoveFromCola();
@@ -299,14 +334,19 @@ namespace Proyecto_1223319_1003519.Controllers
             {
                 if (nuevo.RealizarPrueba())
                 {
+                    //Si está contagiado, lo mueve a una cama si hay espacio y muestra el estado de las camas
                     nuevo.Estado = "Contagiado";
                     Storage.Instance.Stats.NuevoContagiado();
                     Storage.Instance.Hospitales[Storage.Instance.HospitalActual].Add(nuevo);
                     ViewBag.Message = "El resultado de la prueba fue: POSITIVO";
-                    return Cama();
+                    if (Storage.Instance.Hospitales[Storage.Instance.HospitalActual].EstadoCamas.isFull)
+                        return ProximoPaciente();
+                    else
+                        return Cama();
                 }
                 else
                 {
+                    //Si está sano, únicamente lo elimina de la cola y muestra al próximo paciente
                     nuevo.Estado = "Sano";
                     Storage.Instance.Stats.NuevoSano();
                     ViewBag.Message = "El resultado de la prueba fue: NEGATIVO";
@@ -315,11 +355,13 @@ namespace Proyecto_1223319_1003519.Controllers
             }
             else
             {
+                //Muestra este mensaje si se intenta realizar la prueba en un paciente ya confirmado
                 ViewBag.Message = "La prueba ya fue realizada en este paciente. Liberar camas para asignar al paciente a una.";
                 return Cama();
             }
         }
 
+        //Muestra la vista con las estadísticas de los pacientes
         public ActionResult Estadisticas()
         {
             return View(Storage.Instance.Stats);

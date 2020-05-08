@@ -7,6 +7,7 @@ using ClasesGenericas.Estructuras;
 
 namespace ClasesGenericas.Interfaces
 {
+    //Interfaz para las estructuras de datos no lineales
     public abstract class EstructuraNoLineal<T>
     {
         public abstract void Add(T value, Comparison<T> comparer);

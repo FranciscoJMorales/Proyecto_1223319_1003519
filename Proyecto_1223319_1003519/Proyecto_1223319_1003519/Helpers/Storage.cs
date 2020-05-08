@@ -7,10 +7,12 @@ using ClasesGenericas.Estructuras;
 
 namespace Proyecto_1223319_1003519.Helpers
 {
+    //Clase donde se almacenan todos los datos por el patrón Singleton
     public class Storage
     {
         private static Storage _instance;
 
+        //Se crean los hospitales automáticamente
         public Storage()
         {
             Hospitales[0] = new Hospital { ID = 0, Nombre = "Capital" };

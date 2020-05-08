@@ -12,11 +12,13 @@ namespace ClasesGenericas.Estructuras
         private NodoLineal<T> Head;
         public int Count { get; set; } = 0;
 
+        //Llama al método Add
         public void Push(T value)
         {
             Add(value);
         }
 
+        //Ingresa un valor a la pila
         protected override void Add(T value)
         {
             if (Head == null)
@@ -29,11 +31,13 @@ namespace ClasesGenericas.Estructuras
             Count++;
         }
 
+        //Elimina un valor sin devolverlo
         public override void Delete()
         {
             Pop();
         }
 
+        //Devuelve el valor del primer elemento
         public T Get()
         {
             if (Head != null)
@@ -42,11 +46,13 @@ namespace ClasesGenericas.Estructuras
                 return default(T);
         }
 
+        //Llama al método heredado remove
         public T Pop()
         {
             return Remove();
         }
 
+        //Elimina el primer elemento y lo devuelve
         protected override T Remove()
         {
             if (Head != null)
@@ -62,6 +68,7 @@ namespace ClasesGenericas.Estructuras
                 return default(T);
         }
 
+        //Vacía la pila
         public override void Clear()
         {
             Head = null;

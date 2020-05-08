@@ -13,6 +13,7 @@ namespace ClasesGenericas.Estructuras
         private Nodo<IComparable> Raiz { get; set; }
         public int Count { get; set; } = 0;
 
+        //Agrega un nuevo valor al árbol
         public override void Add(IComparable value, Comparison<IComparable> comparer)
         {
             if (Raiz == null)
@@ -30,6 +31,7 @@ namespace ClasesGenericas.Estructuras
                 Insert(value, Raiz, comparer);
         }
 
+        //Método privado recursivo que busca la posición donde debe ir el nuevo valor
         private void Insert(IComparable value, Nodo<IComparable> position, Comparison<IComparable> comparer)
         {
             if (comparer.Invoke(value, position.Valor) > 0)
@@ -44,6 +46,7 @@ namespace ClasesGenericas.Estructuras
                         Derecha = null
                     };
                     Count++;
+                    //Verifica si se necesita hacer rotaciones
                     Verificar(position);
                 }
                 else
@@ -51,6 +54,7 @@ namespace ClasesGenericas.Estructuras
             }
             else
             {
+                //Los elementos repetidos se insertan a la izquierda
                 if (position.Izquierda == null)
                 {
                     position.Izquierda = new Nodo<IComparable>
@@ -61,6 +65,7 @@ namespace ClasesGenericas.Estructuras
                         Derecha = null
                     };
                     Count++;
+                    //Verifica si se necesita hacer rotaciones
                     Verificar(position);
                 }
                 else
@@ -68,6 +73,7 @@ namespace ClasesGenericas.Estructuras
             }
         }
 
+        //Elimina el valor especificado del árbol
         public override IComparable Remove(IComparable value, Comparison<IComparable> comparer)
         {
             try
@@ -77,6 +83,7 @@ namespace ClasesGenericas.Estructuras
                 if (resultados.Count > 0)
                 {
                     Nodo<IComparable> aux = resultados[0];
+                    //Caso donde el nodo no tiene hijos
                     if (aux.Derecha == null && aux.Izquierda == null)
                     {
                         if (aux.Padre != null)
@@ -91,20 +98,25 @@ namespace ClasesGenericas.Estructuras
                         if (aux.Padre != null)
                             Verificar(aux.Padre);
                     }
+                    //Caso donde el nodo tiene 2 hijos
                     else if (aux.Derecha != null && aux.Izquierda != null)
                     {
+                        //Se busca y se elimina el reemplazo
                         Nodo<IComparable> reemplazo = aux.Izquierda;
                         while (reemplazo.Derecha != null)
                         {
                             reemplazo = reemplazo.Derecha;
                         }
                         Delete(reemplazo.Valor, comparer);
+                        //Se cambia el valor del nodo
                         aux.Valor = reemplazo.Valor;
                     }
+                    //Caso donde el nodo tiene un hijo
                     else
                     {
                         if (aux.Padre != null)
                         {
+                            //Se revisa si es hijo izquierdo o derecho de su padre para entrelazar los nodos
                             if (aux.Padre.Izquierda == aux)
                             {
                                 if (aux.Izquierda != null)
@@ -135,6 +147,7 @@ namespace ClasesGenericas.Estructuras
                         }
                         else
                         {
+                            //Si no tiene padre solamente se enlazan del lado de los hijos
                             if (aux.Izquierda != null)
                             {
                                 aux.Izquierda.Padre = aux.Padre;
@@ -170,27 +183,32 @@ namespace ClasesGenericas.Estructuras
             }
         }
 
+        //Elimina un valor sin devolverlo
         public override void Delete(IComparable value, Comparison<IComparable> comparer)
         {
             Remove(value, comparer);
         }
 
+        //Llama al método recursivo de búsquedas
         public List<IComparable> Search(IComparable value, Comparison<IComparable> comparer)
         {
             List<Nodo<IComparable>> result = new List<Nodo<IComparable>>();
             Search(value, Raiz, comparer, result);
             List<IComparable> searchResults = new List<IComparable>();
+            //No devuelve los nodos, sino sus valores
             foreach (Nodo<IComparable> item in result)
                 searchResults.Add(item.Valor);
             return searchResults;
         }
 
+        //Método recursivo de búsqueda. Devuelve una lista con los nodos cuyos valores son iguales al valor buscado
         private void Search(IComparable value, Nodo<IComparable> position, Comparison<IComparable> comparer, List<Nodo<IComparable>> resultados)
         {
             if (position != null)
             {
                 if (comparer.Invoke(value, position.Valor) == 0)
                 {
+                    //Si se encuentra el valor, se agrega a la lista de resultados, pero se sigue verificando en ambos hijos por los elementos repetidos
                     resultados.Add(position);
                     Search(value, position.Izquierda, comparer, resultados);
                     Search(value, position.Derecha, comparer, resultados);
@@ -205,12 +223,14 @@ namespace ClasesGenericas.Estructuras
             }
         }
 
+        //Vacía el árbol
         public override void Clear()
         {
             Raiz = null;
             Count = 0;
         }
 
+        //Devuelve una lista con todos los elementos del árbol
         private void Inorden(Nodo<IComparable> position, List<IComparable> recorrido)
         {
             if (position.Izquierda != null)
@@ -220,6 +240,7 @@ namespace ClasesGenericas.Estructuras
                 Inorden(position.Derecha, recorrido);
         }
 
+        //Devuelve una lista con las alturas de los nodos hijos de un subárbol
         private void Postorden(Nodo<IComparable> position, List<int> recorrido)
         {
             if (position.Izquierda != null)
@@ -229,6 +250,7 @@ namespace ClasesGenericas.Estructuras
             recorrido.Add(Altura(position));
         }
 
+        //Verifica si es necesario hacer una rotación para mantener equilibrado el árbol
         private void Verificar(Nodo<IComparable> position)
         {
             if (FactorEquilibrio(position) > 1)
@@ -255,6 +277,7 @@ namespace ClasesGenericas.Estructuras
             }
         }
 
+        //Rota a la derecha a partir de la raíz recibida
         private void RotarDerecha(Nodo<IComparable> position)
         {
             if (position == Raiz)
@@ -274,6 +297,7 @@ namespace ClasesGenericas.Estructuras
             position.Padre.Derecha = position;
         }
 
+        //Rota a la izquierda a partir de la raíz recibida
         private void RotarIzquierda(Nodo<IComparable> position)
         {
             if (position == Raiz)
@@ -293,6 +317,7 @@ namespace ClasesGenericas.Estructuras
             position.Padre.Izquierda = position;
         }
 
+        //Devuelve el factor de equilibrio del nodo recibido
         private int FactorEquilibrio(Nodo<IComparable> position)
         {
             int alturaDerecha = Altura(position);
@@ -303,6 +328,7 @@ namespace ClasesGenericas.Estructuras
                 Postorden(position.Derecha, derecha);
             if (position.Izquierda != null)
                 Postorden(position.Izquierda, izquierda);
+            //Revisa la altura de todos los nodos en ambos lados para restar las alturas máximas de cada lado
             for (int i = 0; i < izquierda.Count; i++)
             {
                 if (izquierda[i] > alturaIzquierda)
@@ -316,6 +342,7 @@ namespace ClasesGenericas.Estructuras
             return alturaDerecha - alturaIzquierda;
         }
 
+        //Devuelve la altura del nodo recibido
         private int Altura(Nodo<IComparable> position)
         {
             if (position.Padre != null)
@@ -324,6 +351,7 @@ namespace ClasesGenericas.Estructuras
                 return 0;
         }
 
+        //Método heredado de IEnumerable
         public IEnumerator<IComparable> GetEnumerator()
         {
             List<IComparable> recorrido = new List<IComparable>();
@@ -339,6 +367,7 @@ namespace ClasesGenericas.Estructuras
             }
         }
 
+        //Método heredado de IEnumerable
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
